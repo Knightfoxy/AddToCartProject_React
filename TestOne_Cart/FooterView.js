@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View, Image, StyleSheet} from 'react-native';
 
-const FooterViewComponent = ({totalCost}) => {
+const FooterViewComponent = ({totalCost, totalCount}) => {
   return (
     <View style={styles.footerBgView}>
       <View style={styles.totalBaseView}>
@@ -9,7 +9,9 @@ const FooterViewComponent = ({totalCost}) => {
       </View>
       <View style={styles.viewCartTextBgView}>
         <View style={styles.viewCartWithArrowView}>
-          <Text style={styles.footerViewCartText}>VIEW CART (8)</Text>
+          <Text style={styles.footerViewCartText}>
+            VIEW CART ({totalCount})
+          </Text>
           <Image
             style={styles.backIconDesign}
             source={require('/Users/ai/FirstProject_React/TestOne_Cart/Assets/arrowRight.png')}

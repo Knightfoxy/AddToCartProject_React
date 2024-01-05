@@ -17,7 +17,7 @@ import {
   ImageBackground,
 } from 'react-native';
 
-const CartItemComponent = ({title, imageUrl, totalPrice, onUpdateCount}) => {
+const CartItemComponent = ({product, onUpdateCount}) => {
   const [itemCount, setItemCount] = useState(0);
 
   useEffect;
@@ -25,26 +25,26 @@ const CartItemComponent = ({title, imageUrl, totalPrice, onUpdateCount}) => {
   const handleButtonClick = () => {
     console.log('Button in child clicked');
     setItemCount(itemCount + 1);
-    onUpdateCount(itemCount + 1, totalPrice);
+    onUpdateCount(itemCount + 1, product.id);
   };
 
   const onDecreaseButtonPress = () => {
     console.log('decrease button pressed.');
     setItemCount(itemCount - 1);
-    onUpdateCount(itemCount - 1, totalPrice);
+    onUpdateCount(itemCount - 1, product.id);
   };
 
   const onIncreaseButtonPress = () => {
     console.log('Increase button pressed.');
     setItemCount(itemCount + 1);
-    onUpdateCount(itemCount + 1, totalPrice);
+    onUpdateCount(itemCount + 1, product.id);
   };
 
   return (
     <View style={styles.componentMainView}>
       {/* //Item ImageView BG */}
       <View style={styles.cartImageBgView}>
-        <Image style={styles.cartItemImage} src={imageUrl} />
+        <Image style={styles.cartItemImage} src={product.image} />
         <View style={styles.dotView} />
       </View>
 
@@ -52,7 +52,7 @@ const CartItemComponent = ({title, imageUrl, totalPrice, onUpdateCount}) => {
       <View style={styles.cartDetailsView}>
         <View style={styles.viewForNameAndAdd}>
           <Text style={styles.foodNameText} numberOfLines={1}>
-            {title}
+            {product.title}
           </Text>
           {itemCount <= 0 ? (
             <TouchableOpacity
@@ -94,13 +94,13 @@ const CartItemComponent = ({title, imageUrl, totalPrice, onUpdateCount}) => {
 
             <View style={styles.itemDetailsView}>
               <Text style={styles.detailsHeadingsTextStyle}>Per Unit</Text>
-              <Text style={styles.detailsTextStyle}>${totalPrice}</Text>
+              <Text style={styles.detailsTextStyle}>${product.price}</Text>
             </View>
 
             <View style={styles.itemDetailsView}>
               <Text style={styles.detailsHeadingsTextStyle}>Total</Text>
               <Text style={styles.totalTextStyle}>
-                ${totalPrice * itemCount.toFixed(0)}
+                ${product.price * itemCount.toFixed(0)}
               </Text>
             </View>
           </View>

@@ -6,10 +6,21 @@ import HeaderViewComponent from './CartHeaderComponent';
 import FooterViewComponent from './FooterView';
 import {View, StyleSheet, FlatList} from 'react-native';
 
+const ProductItemType = {
+  id: 0,
+  title: '',
+  price: '',
+  category: '',
+  description: '',
+  image: '',
+};
+
 const AddToCartScreen = () => {
   const [data, setData] = useState([]);
   const [totalParticularCostToPay, setTotalCostToPay] = useState(0);
   const [totalCost, setTotalPay] = useState(0);
+  const [itemCountDictionary, setItemCountDictionary] = useState({});
+  const [itemsCount, setItemsCount] = useState(0);
 
   useEffect(() => {
     fetchData();
@@ -30,11 +41,18 @@ const AddToCartScreen = () => {
       });
   };
 
-  const handleCartItemUpdate = (count, price) => {
+  const handleCartItemUpdate = (count, id) => {
     console.log(`CartItemComponent updated with count: ${count}`);
-    console.log(`CartItemComponent updated with Money: ${price * count}`);
-    setTotalCostToPay(price * count);
-    // setTotalPay(totalCost + totalParticularCostToPay);
+    console.log(`CartItemComponent updated having ID: ${id}`);
+    setItemCountDictionary(prevDictionary => ({
+      ...prevDictionary,
+      [id]: count,
+    }));
+    setTotalCostToPay(count * data.hasOwnProperty(id));
+    setItemsCount(Object.keys(itemCountDictionary).length);
+    console.log(Object.keys(itemCountDictionary).length);
+    console.log(itemCountDictionary);
+    // setTotalCostToPay(data[id].price * count);
   };
 
   return (
@@ -48,9 +66,7 @@ const AddToCartScreen = () => {
           data={data}
           renderItem={({item}) => (
             <CartItemComponent
-              title={item.title}
-              imageUrl={item.image}
-              totalPrice={item.price}
+              product={item}
               onUpdateCount={handleCartItemUpdate}
             />
           )}
@@ -60,6 +76,7 @@ const AddToCartScreen = () => {
 
       {/* Footer View */}
       <FooterViewComponent
+        totalCount={itemsCount}
         totalCost={totalParticularCostToPay}></FooterViewComponent>
     </View>
   );
