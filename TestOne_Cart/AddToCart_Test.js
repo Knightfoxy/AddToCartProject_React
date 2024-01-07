@@ -5,6 +5,7 @@ import CartItemComponent from './CartItemView';
 import HeaderViewComponent from './CartHeaderComponent';
 import FooterViewComponent from './FooterView';
 import {View, StyleSheet, FlatList} from 'react-native';
+import {styles} from './AddToCart_Css';
 
 const ProductItemType = {
   id: 0,
@@ -17,10 +18,9 @@ const ProductItemType = {
 
 const AddToCartScreen = () => {
   const [data, setData] = useState([]);
-  const [totalParticularCostToPay, setTotalCostToPay] = useState(0);
   const [totalCost, setTotalPay] = useState(0);
-  const [itemCountDictionary, setItemCountDictionary] = useState({});
-  const [itemsCount, setItemsCount] = useState(0);
+  const [itemCount, setItemCount] = useState(0);
+  let counter = 0;
 
   useEffect(() => {
     fetchData();
@@ -35,24 +35,54 @@ const AddToCartScreen = () => {
     //   });
     axios
       .get('https://fakestoreapi.com/products')
-      .then(response => setData(response.data))
+      .then(response => {
+        const data1 = response.data;
+        const updatedData = data1.map(item => ({
+          ...item,
+          count: 0,
+        }));
+        setData(updatedData);
+      })
       .catch(error => {
         console.error(error);
       });
   };
 
-  const handleCartItemUpdate = (count, id) => {
-    console.log(`CartItemComponent updated with count: ${count}`);
-    console.log(`CartItemComponent updated having ID: ${id}`);
-    setItemCountDictionary(prevDictionary => ({
-      ...prevDictionary,
-      [id]: count,
-    }));
-    setTotalCostToPay(count * data.hasOwnProperty(id));
-    setItemsCount(Object.keys(itemCountDictionary).length);
-    console.log(Object.keys(itemCountDictionary).length);
-    console.log(itemCountDictionary);
-    // setTotalCostToPay(data[id].price * count);
+  const handleCartItemUpdate = (isIncreased, id) => {
+    setData(items => {
+      calculateTotalPrice(items[id - 1], isIncreased);
+      const updatedData = items.map(value => {
+        if (value.id === id) {
+          if (isIncreased) {
+            if (value.count > 0) {
+              setItemCount(itemCount);
+            } else {
+              setItemCount(itemCount + 1);
+            }
+          } else {
+            if (value.count == 1) {
+              setItemCount(itemCount - 1);
+            } else {
+              setItemCount(itemCount);
+            }
+          }
+          const updateValueCount = isIncreased
+            ? value.count + 1
+            : value.count - 1;
+          return {
+            ...value,
+            count: updateValueCount,
+          };
+        }
+        return value;
+      });
+      return updatedData;
+    });
+  };
+
+  const calculateTotalPrice = (data, isIncreased) => {
+    console.log('calculate price: ', data.price);
+    setTotalPay(isIncreased ? totalCost + data.price : totalCost - data.price);
   };
 
   return (
@@ -76,17 +106,10 @@ const AddToCartScreen = () => {
 
       {/* Footer View */}
       <FooterViewComponent
-        totalCount={itemsCount}
-        totalCost={totalParticularCostToPay}></FooterViewComponent>
+        totalCount={itemCount}
+        totalCost={totalCost.toFixed(2)}></FooterViewComponent>
     </View>
   );
 };
 
 export default AddToCartScreen;
-
-const styles = StyleSheet.create({
-  mainView: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-});
